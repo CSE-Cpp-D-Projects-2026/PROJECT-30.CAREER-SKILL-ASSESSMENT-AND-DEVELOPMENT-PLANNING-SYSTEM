@@ -2,6 +2,7 @@
 #include<iostream>
 #include<vector>
 #include<string>
+#include<limits>
 using namespace std;
 
 class StudentManagement
@@ -21,7 +22,7 @@ vector<StudentManagement>students;
 void add()
 {
     StudentManagement s;
-    cout<<"Enter Student ID :";
+    cout<<"Enter Student ID     : ";
     cin>>s.id;
     for(int i=0;i<students.size();i++)
     if(students[i].id==s.id)
@@ -30,15 +31,15 @@ void add()
         return;
 
     }
-    cin.ignore();
-    cout<<"Enter Student Name :";
+    cin.ignore(1000,'\n');
+    cout<<"Enter Student Name     : ";
     getline(cin, s.name);
     cout<<"Enter year :";
     cin>>s.year;
-    cin.ignore();
-    cout<<"Enter Your Department :";
+    cin.ignore(1000,'\n');
+    cout<<"Enter Your Department  : ";
     getline(cin,s.department);
-    cout<<"Enter Your Email: ";
+    cout<<"Enter Your Email       : ";
     getline(cin,s.email);
     students.push_back(s);
     cout<<"STUDENT ADDED SUCCESSFULLY !!"<<endl;
@@ -214,7 +215,7 @@ void studentmanagement()
             break;
 
             case 6:
-            cout<<"You Exited From the Student Management Menu";
+            cout<<"You Exited From the Student Management Menu"<<endl;
             break;
            
             default:
@@ -232,6 +233,9 @@ class SkillCatalogue
     string skillname;
     string skillcategory;
     string skilldescription;
+    int minlevel;
+    int maxlevel;
+    string assessmentmethod;
 
 };
 
@@ -260,6 +264,15 @@ void addskill()
     getline(cin,sk.skillcategory);
     cout<<"Enter the skill Description : ";
     getline(cin,sk.skilldescription);
+    cout<<"Enter the minimum proficiency level : ";
+    cin>>sk.minlevel;
+    cout<<"Enter the maximum proficiency level : ";
+    cin>>sk.maxlevel;
+    cin.ignore();
+    cout<<"Enter the assessment method : ";
+    getline(cin,sk.assessmentmethod);
+
+
 
     skills.push_back(sk);
 
@@ -283,6 +296,9 @@ void displayskill()
        cout<<"SKILL NAME = "<<skills[i].skillname<<endl;
        cout<<"SKILL CATEGORY = "<<skills[i].skillcategory<<endl;
        cout<<"SKILL DESCRIPTION = "<<skills[i].skilldescription<<endl;
+       cout<<"MINIMUM LEVEL =  "<<skills[i].minlevel<<endl;
+       cout<<"MAXIMUM LEVEL = "<<skills[i].maxlevel<<endl;
+       cout<<"ASSESSMENT METHOD = "<<skills[i].assessmentmethod<<endl;
        found=1;
        break;
         }
@@ -336,6 +352,28 @@ void updateskill()
        getline(cin,skills[i].skillcategory);
        cout<<"Enter the enw skill description : ";
        getline(cin,skills[i].skilldescription);
+
+       cout<<"Enter New Minimum Proficiency Level: ";
+       cin>>skills[i].minlevel;
+
+       cout<<"Enter New Maximum Proficiency Level: ";
+       cin>>skills[i].maxlevel;
+
+       while(skills[i].minlevel<=0 || skills[i].maxlevel<=0 || skills[i].minlevel>skills[i].maxlevel)
+      {
+      cout<<"Invalid proficiency range! Enter again."<<endl;
+
+      cout<<"Enter Minimum Level: ";
+      cin>>skills[i].minlevel;
+
+      cout<<"Enter Maximum Level: ";
+      cin>>skills[i].maxlevel;
+     }
+
+    cin.ignore();
+
+    cout<<"Enter New Assessment Method: ";
+    getline(cin,skills[i].assessmentmethod);
 
        found=1;
        break;
@@ -613,6 +651,324 @@ void careerrole()
     } while (choice3!=6);
     
 }
+class Assessment
+{
+public:
+    int assessmentid;
+    int studentid;
+    int skillid;
+    int score;
+    string assessmenttype;
+    string assessmentdate;
+    string evidencenote;
+    string assessor;
+
+    Assessment()
+    {
+        assessmentid=0;
+        studentid=0;
+        skillid=0;
+        score=0;
+    }
+
+    virtual void display()
+    {
+        cout<<"Assessment ID: "<<assessmentid<<endl;
+        cout<<"Student ID: "<<studentid<<endl;
+        cout<<"Skill ID: "<<skillid<<endl;
+        cout<<"Score: "<<score<<endl;
+        cout<<"Assessment Type: "<<assessmenttype<<endl;
+        cout<<"Assessment Date: "<<assessmentdate<<endl;
+        cout<<"Evidence Note: "<<evidencenote<<endl;
+        cout<<"Assessor: "<<assessor<<endl;
+    }
+
+    virtual ~Assessment()
+    {
+    }
+};
+
+class SelfAssessment : public Assessment
+{
+public:
+    void display() override
+    {
+        cout<<"SELF ASSESSMENT"<<endl;
+        Assessment::display();
+    }
+};
+
+class FacultyAssessment : public Assessment
+{
+public:
+    void display() override
+    {
+        cout<<"FACULTY ASSESSMENT"<<endl;
+        Assessment::display();
+    }
+};
+
+vector<Assessment*> assessments;
+
+
+void selfassessment()
+{
+    SelfAssessment *a = new SelfAssessment;
+    int found=0;
+
+    cout<<"------ SELF ASSESSMENT ------"<<endl;
+
+    cout<<"Enter Assessment ID: ";
+    cin>>a->assessmentid;
+
+    for(int i=0;i<assessments.size();i++)
+    {
+        if(assessments[i]->assessmentid==a->assessmentid)
+        {
+            cout<<"Assessment ID Already Exists!"<<endl;
+            delete a;
+            return;
+        }
+    }
+
+    cout<<"Enter Student ID: ";
+    cin>>a->studentid;
+
+    for(int i=0;i<students.size();i++)
+    {
+        if(students[i].id==a->studentid)
+        {
+            found=1;
+            a->assessor=students[i].name;
+            break;
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"Student ID Not Found!"<<endl;
+        delete a;
+        return;
+    }
+
+    found=0;
+
+    cout<<"Enter Skill ID: ";
+    cin>>a->skillid;
+
+    for(int i=0;i<skills.size();i++)
+    {
+        if(skills[i].skillid==a->skillid)
+        {
+            found=1;
+
+            cout<<"Skill Name: "<<skills[i].skillname<<endl;
+            cout<<"Minimum Level: "<<skills[i].minlevel<<endl;
+            cout<<"Maximum Level: "<<skills[i].maxlevel<<endl;
+
+            cout<<"Enter Your Score: ";
+            cin>>a->score;
+
+            while(a->score<skills[i].minlevel || a->score>skills[i].maxlevel)
+            {
+                cout<<"Invalid Score! Enter Again: ";
+                cin>>a->score;
+            }
+
+            break;
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"Skill ID Not Found!"<<endl;
+        delete a;
+        return;
+    }
+
+    a->assessmenttype="Self";
+
+    cin.ignore();
+
+    cout<<"Enter Assessment Date: ";
+    getline(cin,a->assessmentdate);
+
+    cout<<"Enter Evidence Note: ";
+    getline(cin,a->evidencenote);
+
+    if(a->assessmentdate=="" || a->evidencenote=="")
+    {
+        cout<<"Date and Evidence Note Cannot Be Empty!"<<endl;
+        delete a;
+        return;
+    }
+
+    assessments.push_back(a);
+
+    cout<<"Self Assessment Added Successfully!"<<endl;
+}
+
+
+void facultyassessment()
+{
+    FacultyAssessment *a = new FacultyAssessment;
+    int found=0;
+
+    cout<<"------ FACULTY ASSESSMENT ------"<<endl;
+
+    cout<<"Enter Assessment ID: ";
+    cin>>a->assessmentid;
+
+    for(int i=0;i<assessments.size();i++)
+    {
+        if(assessments[i]->assessmentid==a->assessmentid)
+        {
+            cout<<"Assessment ID Already Exists!"<<endl;
+            delete a;
+            return;
+        }
+    }
+
+    cout<<"Enter Student ID: ";
+    cin>>a->studentid;
+
+    for(int i=0;i<students.size();i++)
+    {
+        if(students[i].id==a->studentid)
+        {
+            found=1;
+            break;
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"Student ID Not Found!"<<endl;
+        delete a;
+        return;
+    }
+
+    found=0;
+
+    cout<<"Enter Skill ID: ";
+    cin>>a->skillid;
+
+    for(int i=0;i<skills.size();i++)
+    {
+        if(skills[i].skillid==a->skillid)
+        {
+            found=1;
+
+            cout<<"Skill Name: "<<skills[i].skillname<<endl;
+            cout<<"Minimum Level: "<<skills[i].minlevel<<endl;
+            cout<<"Maximum Level: "<<skills[i].maxlevel<<endl;
+
+            cout<<"Enter Faculty Assessment Score: ";
+            cin>>a->score;
+
+            while(a->score<skills[i].minlevel || a->score>skills[i].maxlevel)
+            {
+                cout<<"Invalid Score! Enter Again: ";
+                cin>>a->score;
+            }
+
+            break;
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"Skill ID Not Found!"<<endl;
+        delete a;
+        return;
+    }
+
+    a->assessmenttype="Faculty";
+
+    cin.ignore();
+
+    cout<<"Enter Assessment Date: ";
+    getline(cin,a->assessmentdate);
+
+    cout<<"Enter Evidence Note: ";
+    getline(cin,a->evidencenote);
+
+    cout<<"Enter Faculty Name: ";
+    getline(cin,a->assessor);
+
+    if(a->assessmentdate=="" || a->evidencenote=="" || a->assessor=="")
+    {
+        cout<<"Fields Cannot Be Empty!"<<endl;
+        delete a;
+        return;
+    }
+
+    assessments.push_back(a);
+
+    cout<<"Faculty Assessment Added Successfully!"<<endl;
+}
+
+
+void displayassessment()
+{
+    if(assessments.empty())
+    {
+        cout<<"No Assessment Records Found!"<<endl;
+        return;
+    }
+
+    cout<<"------ ALL ASSESSMENT RECORDS ------"<<endl;
+
+    for(int i=0;i<assessments.size();i++)
+    {
+        cout<<"--------------------------"<<endl;
+        assessments[i]->display();
+    }
+}
+
+
+void assessmenthistory()
+{
+    int id,found=0;
+
+    cout<<"------ ASSESSMENT HISTORY ------"<<endl;
+
+    cout<<"Enter Student ID: ";
+    cin>>id;
+
+    for(int i=0;i<students.size();i++)
+    {
+        if(students[i].id==id)
+        {
+            found=1;
+            cout<<"Student Name: "<<students[i].name<<endl;
+            break;
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"Student ID Not Found!"<<endl;
+        return;
+    }
+
+    found=0;
+
+    for(int i=0;i<assessments.size();i++)
+    {
+        if(assessments[i]->studentid==id)
+        {
+            found=1;
+            cout<<"--------------------------"<<endl;
+            assessments[i]->display();
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"No Assessment History Found!"<<endl;
+    }
+}
 void skillassessment()
 {
    
@@ -634,19 +990,23 @@ void skillassessment()
     switch(choice4)
     {
         case 1:
+        selfassessment();
         break;
 
         case 2:
+        facultyassessment();
         break;
 
         case 3:
+        displayassessment();
         break;
 
         case 4:
+        assessmenthistory();
         break;
 
         case 5:
-        cout<<"You got exuted from the skill assessment menu"<<endl;
+        cout<<"You got exited from the skill assessment menu"<<endl;
         break;
 
         default:
@@ -656,7 +1016,209 @@ void skillassessment()
 
 
 }
+
+int gapstudentid;
+
+vector<int> gapskillid;
+vector<int> gaprequiredlevel;
+vector<int> gapcurrentscore;
+vector<int> gapassessed;
+
+void calculateskillgap()
+{
+    int sid,rid,found=0;
+
+    cout<<"Enter Student ID: ";
+    cin>>sid;
+
+    for(int i=0;i<students.size();i++)
+    {
+        if(students[i].id==sid)
+        {
+            found=1;
+            break;
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"Student Not Found!"<<endl;
+        return;
+    }
+
+    cout<<"Enter Career Role ID: ";
+    cin>>rid;
+
+    found=0;
+
+    for(int i=0;i<management.size();i++)
+    {
+        if(management[i].rid==rid)
+        {
+            found=1;
+            break;
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"Career Role Not Found!"<<endl;
+        return;
+    }
+
+    gapstudentid=sid;
+
+    gapskillid.clear();
+    gaprequiredlevel.clear();
+    gapcurrentscore.clear();
+    gapassessed.clear();
+
+    int n;
+
+    cout<<"Enter Number of Required Skills: ";
+    cin>>n;
+
+    while(n<=0)
+    {
+        cout<<"Invalid Number! Enter Again: ";
+        cin>>n;
+    }
+
+    for(int j=0;j<n;j++)
+    {
+        int sk_id,target,score=0,assessed=0;
+        found=0;
+
+        cout<<"Enter Skill ID: ";
+        cin>>sk_id;
+
+        for(int i=0;i<skills.size();i++)
+        {
+            if(skills[i].skillid==sk_id)
+            {
+                found=1;
+
+                cout<<"Skill Name: "<<skills[i].skillname<<endl;
+
+                cout<<"Enter Required Level: ";
+                cin>>target;
+
+                while(target<skills[i].minlevel || target>skills[i].maxlevel)
+                {
+                    cout<<"Invalid Level! Enter Again: ";
+                    cin>>target;
+                }
+
+                for(int k=0;k<assessments.size();k++)
+                {
+                    if(assessments[k]->studentid==sid &&
+                       assessments[k]->skillid==sk_id)
+                    {
+                        score=assessments[k]->score;
+                        assessed=1;
+                    }
+                }
+
+                gapskillid.push_back(sk_id);
+                gaprequiredlevel.push_back(target);
+                gapcurrentscore.push_back(score);
+                gapassessed.push_back(assessed);
+
+                if(assessed==1)
+                {
+                    int gap=target-score;
+
+                    cout<<"Current Level: "<<score<<endl;
+                    cout<<"Skill Gap: "<<gap<<endl;
+
+                    if(gap>0)
+                    {
+                        cout<<"Status: Needs Improvement"<<endl;
+                    }
+                    else if(gap==0)
+                    {
+                        cout<<"Status: Requirement Achieved"<<endl;
+                    }
+                    else
+                    {
+                        cout<<"Status: Strong Skill"<<endl;
+                    }
+                }
+                else
+                {
+                    cout<<"No Assessment Found!"<<endl;
+                }
+
+                break;
+            }
+        }
+
+        if(found==0)
+        {
+            cout<<"Skill Not Found!"<<endl;
+            j--;
+        }
+    }
+}
+
+void displaymissingskills()
+{
+    int found=0;
+
+    for(int i=0;i<gapskillid.size();i++)
+    {
+        if(gapassessed[i]==0 || gapcurrentscore[i]<gaprequiredlevel[i])
+        {
+            for(int j=0;j<skills.size();j++)
+            {
+                if(skills[j].skillid==gapskillid[i])
+                {
+                    cout<<"Missing Skill: "<<skills[j].skillname<<endl;
+                    found=1;
+                    break;
+                }
+            }
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"No Missing Skills!"<<endl;
+    }
+}
+
+
+void displaystrongskills()
+{
+    int found=0;
+
+    for(int i=0;i<gapskillid.size();i++)
+    {
+        if(gapassessed[i]==1 && gapcurrentscore[i]>gaprequiredlevel[i])
+        {
+            for(int j=0;j<skills.size();j++)
+            {
+                if(skills[j].skillid==gapskillid[i])
+             
+                {
+                    cout<<"Strong Skill: "<<skills[j].skillname<<endl;
+                    cout<<"Current Level: "<<gapcurrentscore[i]<<endl;
+                    cout<<"Required Level: "<<gaprequiredlevel[i]<<endl;
+
+                    found=1;
+                    break;
+                }
+            }
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"No Strong Skills Found!"<<endl;
+    }
+}
 void gapanalysis()
+
 {
     int choice5;
     do{
@@ -673,15 +1235,15 @@ void gapanalysis()
         switch(choice5)
         {
             case 1:
-                
+                calculateskillgap();
                 break;
 
             case 2:
-                
+                displaymissingskills();
                 break;
 
             case 3:
-               
+               displaystrongskills();
                 break;
 
             case 4:
@@ -792,15 +1354,11 @@ void progressreport()
 
     }while(choice7!=6);
 }
-
-
-
-
-    
-    
+   
 
 int main()
 {
+
     int choice;
     do{
     cout<<"**********************************************************"<<endl;  
@@ -849,7 +1407,7 @@ int main()
 
         case 6:
         cout<<"DEVELOPMENT PLANNING SELECTED!"<<endl;
-       developmentplanning();
+        developmentplanning();
         break;
 
         case 7:
