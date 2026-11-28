@@ -1256,6 +1256,237 @@ void gapanalysis()
 
     }while(choice5!=4);
 }
+class developmentTask
+{
+public:
+    int taskid;
+    int studentid;
+    int skillid;
+    string taskname;
+    string taskdescription;
+    string startdate;
+    string targetdate;
+    string status;
+};
+vector<developmentTask> tasks;
+void createtask()
+{
+    developmentTask t;
+    int found=0;
+    cout<<"CREATE DEVELOPMENT TASK "<<endl;
+    cout<<"Enter Task ID: ";
+    cin>>t.taskid;
+    for(int i=0;i<tasks.size();i++)
+    {
+        if(tasks[i].taskid==t.taskid)
+        {
+            cout<<"Task ID Already Exists!"<<endl;
+            return;
+        }
+    }
+    cout<<"Enter Student ID: ";
+    cin>>t.studentid;
+    for(int i=0;i<students.size();i++)
+    {
+        if(students[i].id==t.studentid)
+        {
+            found=1;
+            break;
+        }
+    }
+    if(found==0)
+    {
+        cout<<"Student ID Not Found!"<<endl;
+        return;
+    }
+    found=0;
+    cout<<"Enter Skill ID: ";
+    cin>>t.skillid;
+    for(int i=0;i<skills.size();i++)
+    {
+        if(skills[i].skillid==t.skillid)
+        {
+            found=1;
+            cout<<"Skill Name: "<<skills[i].skillname<<endl;
+            break;
+        }
+    }
+    if(found==0)
+    {
+        cout<<"Skill ID Not Found!"<<endl;
+        return;
+    }
+    cin.ignore();
+    cout<<"Enter Task Name: ";
+    getline(cin,t.taskname);
+    cout<<"Enter Task Description: ";
+    getline(cin,t.taskdescription);
+    cout<<"Enter Start Date: ";
+    getline(cin,t.startdate);
+    cout<<"Enter Target Completion Date: ";
+    getline(cin,t.targetdate);
+    t.status="Pending";
+    tasks.push_back(t);
+    cout<<"Development Task Created Successfully!"<<endl;
+}
+void displaytasks()
+{
+    if(tasks.empty())
+    {
+        cout<<"No Development Tasks Found!"<<endl;
+        return;
+    }
+    cout<<"ALL DEVELOPMENT TASKS "<<endl;
+    for(int i=0;i<tasks.size();i++)
+    {
+        cout<<"Task ID: "<<tasks[i].taskid<<endl;
+        cout<<"Student ID: "<<tasks[i].studentid<<endl;
+        cout<<"Skill ID: "<<tasks[i].skillid<<endl;
+        cout<<"Task Name: "<<tasks[i].taskname<<endl;
+        cout<<"Task Description: "<<tasks[i].taskdescription<<endl;
+        cout<<"Start Date: "<<tasks[i].startdate<<endl;
+        cout<<"Target Completion Date: "<<tasks[i].targetdate<<endl;
+        cout<<"Status: "<<tasks[i].status<<endl;
+    }
+}
+void updatetaskstatus()
+{
+    int tid,found=0,choice;
+    cout<<"Enter Task ID: ";
+    cin>>tid;
+    for(int i=0;i<tasks.size();i++)
+    {
+        if(tasks[i].taskid==tid)
+        {
+            found=1;
+            cout<<"Task Name: "<<tasks[i].taskname<<endl;
+            cout<<"Current Status: "<<tasks[i].status<<endl;
+            cout<<"Select New Status:"<<endl;
+            cout<<"1. Pending"<<endl;
+            cout<<"2. In Progress"<<endl;
+            cout<<"3. Completed"<<endl;
+            cout<<"Enter Your Choice: ";
+            cin>>choice;
+
+            while(choice<1 || choice>3)
+            {
+                cout<<"Invalid Choice! Enter Again: ";
+                cin>>choice;
+            }
+            if(choice==1)
+            {
+                tasks[i].status="Pending";
+            }
+            else if(choice==2)
+            {
+                tasks[i].status="In Progress";
+            }
+            else
+            {
+                tasks[i].status="Completed";
+            }
+            cout<<"Task Status Updated Successfully!"<<endl;
+            cout<<"New Status: "<<tasks[i].status<<endl;
+            break;
+        }
+    }
+    if(found==0)
+    {
+        cout<<"Task Not Found!"<<endl;
+    }
+}
+void deletetask()
+{
+    int tid,found=0,choice;
+    cout<<"Enter Task ID to Delete: ";
+    cin>>tid;
+    for(int i=0;i<tasks.size();i++)
+    {
+        if(tasks[i].taskid==tid)
+        {
+            found=1;
+            cout<<"Task Name: "<<tasks[i].taskname<<endl;
+            cout<<"Student ID: "<<tasks[i].studentid<<endl;
+            cout<<"Are You Sure You Want to Delete?"<<endl;
+            cout<<"1. YES"<<endl;
+            cout<<"2. NO"<<endl;
+            cout<<"Enter Your Choice: ";
+            cin>>choice;
+            if(choice==1)
+            {
+                tasks.erase(tasks.begin()+i);
+
+                cout<<"Development Task Deleted Successfully!"<<endl;
+            }
+            else
+            {
+                cout<<"Task Deletion Cancelled!"<<endl;
+            }
+
+            break;
+        }
+    }
+    if(found==0)
+    {
+        cout<<"Task Not Found!"<<endl;
+    }
+}
+void trackprogress()
+{
+    int sid,found=0;
+    int total=0,completed=0,pending=0,inprogress=0;
+    cout<<"Enter Student ID: ";
+    cin>>sid;
+    for(int i=0;i<students.size();i++)
+    {
+        if(students[i].id==sid)
+        {
+            found=1;
+            cout<<"Student Name: "<<students[i].name<<endl;
+            break;
+        }
+    }
+    if(found==0)
+    {
+        cout<<"Student Not Found!"<<endl;
+        return;
+    }
+    for(int i=0;i<tasks.size();i++)
+    {
+        if(tasks[i].studentid==sid)
+        {
+            total++;
+            if(tasks[i].status=="Completed")
+            {
+                completed++;
+            }
+            else if(tasks[i].status=="Pending")
+            {
+                pending++;
+            }
+            else if(tasks[i].status=="In Progress")
+            {
+                inprogress++;
+            }
+        }
+    }
+
+    cout<<"------ DEVELOPMENT PROGRESS REPORT ------"<<endl;
+    cout<<"Total Tasks       : "<<total<<endl;
+    cout<<"Completed Tasks   : "<<completed<<endl;
+    cout<<"Pending Tasks     : "<<pending<<endl;
+    cout<<"In Progress Tasks : "<<inprogress<<endl;
+    if(total==0)
+    {
+        cout<<"No Development Tasks Assigned!"<<endl;
+    }
+    else
+    {
+        float progress=(completed*100.0)/total;
+
+        cout<<"Development Progress: "<<progress<<"%"<<endl;
+    }
+}
 void  developmentplanning()
 {
     int choice6;
@@ -1276,23 +1507,23 @@ void  developmentplanning()
         switch(choice6)
         {
             case 1:
-                
+                 createtask();
                 break;
 
             case 2:
-                
+                displaytasks();
                 break;
 
             case 3:
-                
+                updatetaskstatus();
                 break;
 
             case 4:
-               
+                deletetask();
                 break;
 
             case 5:
-                
+                trackprogress();
                 break;
 
             case 6:
@@ -1305,6 +1536,293 @@ void  developmentplanning()
 
     }while(choice6!=6);
 }
+
+void studentreport()
+{
+    int sid,found=0,count=0;
+
+    cout<<"Enter Student ID: ";
+    cin>>sid;
+
+    for(int i=0;i<students.size();i++)
+    {
+        if(students[i].id==sid)
+        {
+            found=1;
+
+            cout<<"------ STUDENT REPORT ------"<<endl;
+            cout<<"Student ID: "<<students[i].id<<endl;
+            cout<<"Name: "<<students[i].name<<endl;
+            cout<<"Department: "<<students[i].department<<endl;
+            cout<<"Year: "<<students[i].year<<endl;
+            cout<<"Email: "<<students[i].email<<endl;
+
+            break;
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"Student Not Found!"<<endl;
+        return;
+    }
+
+    cout<<"------ ASSESSMENT DETAILS ------"<<endl;
+
+    for(int i=0;i<assessments.size();i++)
+    {
+        if(assessments[i]->studentid==sid)
+        {
+            assessments[i]->display();
+            count++;
+        }
+    }
+
+    cout<<"Total Assessments: "<<count<<endl;
+
+    if(count==0)
+    {
+        cout<<"No Assessment Records Found!"<<endl;
+    }
+}
+
+void assessmentreport()
+{
+    if(assessments.empty())
+    {
+        cout<<"No Assessment Records Found!"<<endl;
+        return;
+    }
+
+    int total=0;
+
+    cout<<"------ ASSESSMENT REPORT ------"<<endl;
+
+    for(int i=0;i<assessments.size();i++)
+    {
+        cout<<"--------------------------"<<endl;
+
+        assessments[i]->display();
+
+        total=total+assessments[i]->score;
+    }
+
+    float average=(float)total/assessments.size();
+
+    cout<<"Total Assessments: "<<assessments.size()<<endl;
+    cout<<"Total Score: "<<total<<endl;
+    cout<<"Average Score: "<<average<<endl;
+}
+
+
+void skillgapreport()
+{
+    if(gapskillid.empty())
+    {
+        cout<<"Please Calculate Skill Gap First!"<<endl;
+        return;
+    }
+
+    int missing=0,strong=0,achieved=0;
+
+    cout<<"------ SKILL GAP REPORT ------"<<endl;
+    cout<<"Student ID: "<<gapstudentid<<endl;
+
+    for(int i=0;i<gapskillid.size();i++)
+    {
+        for(int j=0;j<skills.size();j++)
+        {
+            if(skills[j].skillid==gapskillid[i])
+            {
+                cout<<"Skill Name: "<<skills[j].skillname<<endl;
+                cout<<"Required Level: "<<gaprequiredlevel[i]<<endl;
+
+                if(gapassessed[i]==0)
+                {
+                    cout<<"Status: Not Assessed"<<endl;
+                    missing++;
+                }
+                else
+                {
+                    cout<<"Current Level: "<<gapcurrentscore[i]<<endl;
+
+                    if(gapcurrentscore[i]<gaprequiredlevel[i])
+                    {
+                        cout<<"Status: Missing Skill"<<endl;
+                        missing++;
+                    }
+                    else if(gapcurrentscore[i]==gaprequiredlevel[i])
+                    {
+                        cout<<"Status: Requirement Achieved"<<endl;
+                        achieved++;
+                    }
+                    else
+                    {
+                        cout<<"Status: Strong Skill"<<endl;
+                        strong++;
+                    }
+                }
+
+                cout<<"--------------------------"<<endl;
+                break;
+            }
+        }
+    }
+
+    cout<<"Total Required Skills: "<<gapskillid.size()<<endl;
+    cout<<"Missing Skills: "<<missing<<endl;
+    cout<<"Achieved Skills: "<<achieved<<endl;
+    cout<<"Strong Skills: "<<strong<<endl;
+}
+
+
+void developmentprogressreport()
+{
+    int sid,found=0,count=0;
+    int improved=0,same=0,decreased=0;
+
+    cout<<"Enter Student ID: ";
+    cin>>sid;
+
+    for(int i=0;i<students.size();i++)
+    {
+        if(students[i].id==sid)
+        {
+            found=1;
+            cout<<"Student Name: "<<students[i].name<<endl;
+            break;
+        }
+    }
+
+    if(found==0)
+    {
+        cout<<"Student Not Found!"<<endl;
+        return;
+    }
+
+    cout<<"------ DEVELOPMENT PROGRESS REPORT ------"<<endl;
+
+    for(int i=0;i<skills.size();i++)
+    {
+        int first=-1,last=-1,assessed=0;
+
+        for(int j=0;j<assessments.size();j++)
+        {
+            if(assessments[j]->studentid==sid &&
+               assessments[j]->skillid==skills[i].skillid)
+            {
+                if(assessed==0)
+                {
+                    first=assessments[j]->score;
+                }
+
+                last=assessments[j]->score;
+                assessed++;
+            }
+        }
+
+        if(assessed>0)
+        {
+            cout<<"Skill Name: "<<skills[i].skillname<<endl;
+            cout<<"First Score: "<<first<<endl;
+            cout<<"Latest Score: "<<last<<endl;
+
+            if(last>first)
+            {
+                cout<<"Progress: Improved"<<endl;
+                improved++;
+            }
+            else if(last==first)
+            {
+                cout<<"Progress: No Change"<<endl;
+                same++;
+            }
+            else
+            {
+                cout<<"Progress: Decreased"<<endl;
+                decreased++;
+            }
+
+            count++;
+            cout<<"--------------------------"<<endl;
+        }
+    }
+
+    if(count==0)
+    {
+        cout<<"No Assessment Records Found!"<<endl;
+        return;
+    }
+
+    cout<<"Total Skills Assessed: "<<count<<endl;
+    cout<<"Improved Skills: "<<improved<<endl;
+    cout<<"No Change: "<<same<<endl;
+    cout<<"Decreased Skills: "<<decreased<<endl;
+}
+
+
+
+void careerreadinessreport()
+{
+    if(gapskillid.empty())
+    {
+        cout<<"Please Calculate Skill Gap First!"<<endl;
+        return;
+    }
+
+    int ready=0,missing=0;
+    int total=gapskillid.size();
+
+    cout<<"------ CAREER READINESS REPORT ------"<<endl;
+    cout<<"Student ID: "<<gapstudentid<<endl;
+
+    for(int i=0;i<gapskillid.size();i++)
+    {
+        for(int j=0;j<skills.size();j++)
+        {
+            if(skills[j].skillid==gapskillid[i])
+            {
+                cout<<"Skill: "<<skills[j].skillname<<endl;
+
+                if(gapassessed[i]==1 &&
+                   gapcurrentscore[i]>=gaprequiredlevel[i])
+                {
+                    cout<<"Status: Ready"<<endl;
+                    ready++;
+                }
+                else
+                {
+                    cout<<"Status: Not Ready"<<endl;
+                    missing++;
+                }
+
+                break;
+            }
+        }
+    }
+
+    float percentage=(float)ready/total*100;
+
+    cout<<"--------------------------"<<endl;
+    cout<<"Total Required Skills: "<<total<<endl;
+    cout<<"Skills Achieved: "<<ready<<endl;
+    cout<<"Skills Missing: "<<missing<<endl;
+
+    cout<<"Career Readiness: "<<percentage<<"%"<<endl;
+
+    if(percentage==100)
+    {
+        cout<<"Status: Career Ready!"<<endl;
+    }
+    else
+    {
+        cout<<"Status: Improvement Required!"<<endl;
+    }
+}
+
+
+
+
 void progressreport()
 {
     int choice7;
@@ -1325,23 +1843,25 @@ void progressreport()
         switch(choice7)
         {
             case 1:
+            studentreport();
             
                 break;
 
             case 2:
-                
+            
+                assessmentreport();
                 break;
 
             case 3:
-                
+                skillgapreport();
                 break;
 
             case 4:
-               
+               developmentprogressreport();
                 break;
 
             case 5:
-                
+                careerreadinessreport();
                 break;
 
             case 6:
